@@ -1,0 +1,70 @@
+# U -> U([0,1]) #
+moyenne = 1/2 # (a+b)/2 #
+variance = 1/12 # (b-a)²/12 #
+
+def calculMoyVarEmpUnif(U): 
+    n=len(U)
+    moyEmp = np.zeros([n])
+    sommeMoyEmp = 0
+    varEmp = np.zeros([n])
+    sommeVarEmp = 0
+    
+    # autres cas (division par zéro OK)
+    for t in range(n):
+        sommeMoyEmp = sommeMoyEmp + U[t] 
+        moyEmp[t] = (1/(t+1))*sommeMoyEmp
+    
+    for k in range(n):
+        sommeVarEmp = sommeVarEmp + (U[k]-moyEmp[k])**2
+        varEmp[k] = (1/(k+1))*sommeVarEmp
+    return moyEmp,varEmp
+moyenneEmpirique,varianceEmpirique = calculMoyVarEmpUnif(Un)
+
+ecartMoyenne = np.zeros([len(Un)])
+ecartVariance = np.zeros([len(Un)])
+for i in range(len(Un)):
+    ecartMoyenne[i] = np.abs(moyenne - moyenneEmpirique[i])
+    ecartVariance[i] = np.abs(variance - varianceEmpirique[i])
+    
+plt.figure(4)
+plt.plot(temps,ecartMoyenne,label="Ecart moy/moyEmp",color='r')
+plt.plot(temps,ecartVariance,label="Ecart var/varEmp",color='y')
+plt.title("Ecarts moyenne/variance")
+plt.legend(loc="best")
+plt.show()
+
+# Calcul de la moyenneEmp et varEmp avec CongLinéaire ie en Utilisant la suite (Un)n générée par la CongLinéaire #
+def MoyVarEmpUnif(U): 
+    n=len(U)
+    sommeMoyEmp = 0
+    sommeVarEmp = 0
+    
+    for t in range(n):
+        sommeMoyEmp = sommeMoyEmp + U[t] 
+    moyEmp = (1/n)*sommeMoyEmp
+    
+    for k in range(n):
+        sommeVarEmp = sommeVarEmp + (U[k]-moyEmp)**2
+    varEmp = 1/n*sommeVarEmp
+    return moyEmp,varEmp
+moyenneEmpiriqueCong,varianceEmpiriqueCong = MoyVarEmpUnif(Un)
+
+print("moyenneEmpiriqueCong=",moyenneEmpiriqueCong)
+print("varianceEmpiriqueCong=",varianceEmpiriqueCong)
+print()
+
+# Calcul de la moyenneEmp et varEmp avec Python ie création d'une nouvelle suite (Vn)n #
+Vn=np.zeros([len(Un)])
+for k in range (len(Vn)):
+    Vn[k] = npr.random()
+    
+moyenneEmpiriquePy=Vn.mean()
+print("moyenneEmpiriquePy=",moyenneEmpiriquePy)
+varianceEmpiriquePy=Vn.var()
+print("varianceEmpiriquePy=",varianceEmpiriquePy)
+print()
+
+ecartMoyPytCong=np.abs(moyenneEmpiriquePy-moyenneEmpiriqueCong)
+ecartVarPytCong=np.abs(varianceEmpiriquePy-varianceEmpiriqueCong)
+print("ecartMoyPytCong=",ecartMoyPytCong)
+print("ecartVarPytCong=",ecartVarPytCong)
