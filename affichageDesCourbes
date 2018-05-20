@@ -1,0 +1,31 @@
+# Changer la taille via une variable => simplification des modifications #
+a= 4**10+1 #11
+c= 1 #1
+m= 2**31 #70
+X0=150 #100
+N=10000
+
+
+Un = generateurCongruentielLineaire(a,c,m,X0,N)[0]  # (11,1,70,1,100) #
+plt.figure(1)
+plt.hist(Un,normed=1,range=(0.0,1.0),label="proportion",color='r')
+plt.title("Densité de Un")
+plt.legend(loc="best")
+plt.show() 
+
+# Xn fonction du temps #
+temps=np.linspace(1,N+1,N)    
+Xn = generateurCongruentielLineaire(a,c,m,X0,N)[1]  # (11,1,70,1,100) #
+plt.figure(2)
+plt.plot(temps,Xn,label="Xn=f(temps)",color='g')
+plt.legend(loc="best")
+plt.show()
+## => période d'environ 30 pour paramètres (11,1,70,1,100) ????#
+
+# XnNext=f(Xn) #
+XnNext=Xn[1:]
+Xn=Xn[:-1]
+plt.figure(3)
+plt.scatter(Xn,XnNext,label="Xn+1=f(Xn)",color='c',marker='x')
+plt.legend(loc="best")
+plt.show()
