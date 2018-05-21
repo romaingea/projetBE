@@ -1,0 +1,22 @@
+################################################# LOI DE CAUCHY #################################################
+def Cauchy(U):
+    return np.tan((U-0.5)*np.pi)
+
+# CauchyCong #
+CauchyCong=Cauchy(Un)
+
+# CauchyPython #
+CauchyPyt=Cauchy(Vn)
+
+plt.figure(6)
+x = np.linspace(-11,11, 10000)
+#plt.hist(CauchyCong,normed=1,range=(-11.0,11.0),label="CauchyCong",color='w',edgecolor='r',hatch = '*')
+#plt.hist(CauchyPyt,normed=1,range=(-11.0,11.0),label="CauchyPython",color='w',edgecolor='y',hatch = '////')
+#sns.kdeplot(CauchyCong)
+sns.kdeplot(CauchyCong, bw=1e10, label="bw: 1e10")
+sns.kdeplot(CauchyPyt, color='r', bw=1e10, label="bw: 1e10")
+plt.xlabel('temps')
+plt.ylabel('densité')
+plt.title("Densités de CauchyCong et CauchyPython")
+plt.legend(loc="best")
+plt.show()
