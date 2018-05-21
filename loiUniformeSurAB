@@ -1,0 +1,13 @@
+def UnifSurI(a,b):
+    UnSurI = a + (b-a)*Un
+    moyEmpSurI,varEmpSurI = MoyVarEmpUnif(UnSurI)
+    return UnSurI,moyEmpSurI,varEmpSurI
+    
+Uab,moy_ab,var_ab=UnifSurI(2,3)
+plt.figure(5)
+plt.hist(Uab,normed=1,label="proportion",color='r')
+plt.title("Densité de U[2;3]")
+plt.legend(loc="best")
+plt.show()
+print("ecart moy=",np.abs(2.5-moy_ab))
+print("ecart var=",np.abs((1/12)-var_ab))
