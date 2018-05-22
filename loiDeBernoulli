@@ -1,0 +1,20 @@
+# Génération d'une Bernoulli B(p) #
+def Bernoulli(p):
+    Y_bernoulli = loiDiscrete (Vn,p)
+    
+    for i in range(len(Y_bernoulli)):
+        Y_bernoulli[i] -= 1
+        
+    return Y_bernoulli
+
+# Test de la génération d'une bernoulli B(0.25) #
+p_bernoulli=np.array([ [0.25], [0.75] ])
+Y_bernoulli = Bernoulli(p_bernoulli) 
+print ("Y_bernoulli=",Y_bernoulli)
+
+# Vérification des proportions #
+Somme_p1 = 0
+for i in range (len(Y_bernoulli)):
+    if (Y_bernoulli[i] == 0):
+        Somme_p1 += 1
+print("p1=",(Somme_p1/len(Y_bernoulli)))
