@@ -1,0 +1,10 @@
+# Génération d'une Binomiale Bin(n,p) #
+def Binomiale(n,p):
+    Somme = 0
+    Y_bernoulli = Bernoulli(p)
+    for k in range(n):
+        Somme = Somme + Y_bernoulli[k]
+    return Somme
+
+Y_binomiale = Binomiale(10000,p_bernoulli)  # on prend le p de la bernoulli ie p=0.25
+print ("Y_binomiale=",Y_binomiale)
