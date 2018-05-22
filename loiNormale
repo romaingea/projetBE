@@ -1,0 +1,25 @@
+# Loi normale
+def loi_normale(U1,U2):
+    n=len(U1)
+    X=np.zeros([n])
+    Y=np.zeros([n])
+    
+    for i in range(n): # 0 à n-1
+        X[i]=(-2*np.log(U1[i]))**(1/2)*np.cos(2*np.pi*U2[i])
+        Y[i]=(-2*np.log(U1[i]))**(1/2)*np.sin(2*np.pi*U2[i])
+    return X,Y
+
+X,Y=loi_normale(Un,Vn)  # U1=Ucong  U2=Upython
+
+plt.figure(7)
+x = np.linspace(-6, 6, 10000)
+#plt.hist(X,normed=1,range=(-6,6),bins=100, label="Normale X",color='w',edgecolor='r',hatch = '*')
+#plt.hist(Y,normed=1,range=(-6,6),bins=100, label="Normale Y",color='w',edgecolor='c',hatch = '////')
+sns.distplot(X,color='b',label="loi normale (0,1) (Un congruentielle)")
+sns.distplot(Y,color='r',label="loi normale (0,1) (Vn python)")
+plt.plot(x,scipy.stats.norm.pdf(x,0,1),color='y',label="loi Normale Réelle (0,1)")
+plt.xlabel('temps')
+plt.ylabel('densité normale')
+plt.title("Densités des lois normales X et Y")
+plt.legend(loc="best")
+plt.show()
