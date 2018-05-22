@@ -1,0 +1,14 @@
+# Générer une loi discrete quelconque à l'aide d'une uniforme sur [0;1]
+def loiDiscrete(U,p):
+    s=np.zeros([len(p)+1])
+    Y=np.ones([len(U)])
+    
+    s[0]=0
+    for i in range (1,len(p)+1):
+        s[i] = np.sum(p[:i])
+    
+    for k in range (0,len(p)):
+        for j in range (0,len(U)):
+            if (s[k] <= U[j] <= s[k+1]):
+                Y[j]=k+1
+    return Y
