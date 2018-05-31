@@ -1,3 +1,4 @@
+################################################# LOI BERNOULLI #################################################
 # Génération d'une Bernoulli B(p) #
 def Bernoulli(p):
     Y_bernoulli = loiDiscrete (Vn,p)
@@ -10,7 +11,13 @@ def Bernoulli(p):
 # Test de la génération d'une bernoulli B(0.25) #
 p_bernoulli=np.array([ [0.25], [0.75] ])
 Y_bernoulli = Bernoulli(p_bernoulli) 
-print ("Y_bernoulli=",Y_bernoulli)
+plt.hist(Y_bernoulli,normed=1,range=(0,9.0),label="test loi bernoulli B(p=0.25)",color='w',edgecolor='c',hatch = '//')
+plt.xlabel('omega[i]')
+plt.ylabel('probabilités p[i]')
+plt.title("Densités de la loi bernoulli")
+plt.legend(loc="best")
+plt.show()
+
 
 # Vérification des proportions #
 Somme_p1 = 0
@@ -18,3 +25,4 @@ for i in range (len(Y_bernoulli)):
     if (Y_bernoulli[i] == 0):
         Somme_p1 += 1
 print("p1=",(Somme_p1/len(Y_bernoulli)))
+print ("Y_bernoulli=",Y_bernoulli)
