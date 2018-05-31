@@ -1,0 +1,35 @@
+# Cercle par méthode de rejet
+def pave(taille) :
+    #X = UnifSurI(-1,1)[0]
+    #Y = 2*np.random()-1
+    X = np.random.uniform(-1,1,taille)
+    Y = np.random.uniform(-1,1,taille)
+    return X,Y
+
+
+def cercle_26(taille) :
+
+    U = np.zeros(taille)
+    V = np.zeros(taille)
+    
+    
+    X,Y = pave(taille)
+    
+    for i in range(taille):
+    
+        if (np.sqrt(X[i]**2+Y[i]**2) < 1) :
+            U[i] = X[i]
+            V[i] = Y[i]
+    return U,V
+
+
+X,Y = pave(10000)
+Xcercle,Ycercle = cercle_26(10000)
+plt.scatter(X,Y,s=3,color='y')
+plt.scatter(Xcercle,Ycercle,s=3,color='r')
+
+
+plt.axis("equal")
+plt.show()
+
+
