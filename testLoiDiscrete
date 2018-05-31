@@ -1,0 +1,15 @@
+######### test loi discrete #########
+def testLoiDiscrete():
+    U = np.random.uniform(0,1,6000)
+    p = np.zeros([4])
+    p[0]=1/12 
+    p[1]=1/3
+    p[2]=1/2
+    p[3]=1/12
+
+
+    Z = loiDiscrete(U,p)
+    return Z
+
+Z = testLoiDiscrete()
+plt.hist(Z,normed=1,range=(0,9.0),label="test loi discrete",color='w',edgecolor='c',hatch = '//')
