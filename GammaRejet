@@ -1,0 +1,36 @@
+def densite_Gamma(x,a):
+    return 1/(math.gamma(a))*x**(a-1)*np.exp(-x)
+#
+#
+# paramètre de la loi
+a = 0.5
+
+# constante 
+c = 1/(a*math.gamma(a))*np.exp(a**(1/(1-a))*(1-a))
+
+
+U = np.random.uniform(0,1,100000)
+
+X = loi_Weibull(1,a,U)
+
+#A = np.linspace(0,20,100)
+
+Y = np.random.uniform(0,c*weib(X,1,a),len(X))
+
+N = np.zeros(len(X))
+
+indice = 0
+
+for i in range(len(X)): 
+    if (Y[i] > densite_Gamma(X[i],a)) :
+        i=+1
+    else:
+        N[i]=X[i]    
+    
+    
+
+sns.distplot(N,color='r')
+
+plt.xlim(0, 5)
+plt.ylim(0,2)
+plt.show()
