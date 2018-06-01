@@ -363,8 +363,6 @@ U = np.random.uniform(0,1,100000)
 
 X = loi_Weibull(1,a,U)
 
-#A = np.linspace(0,20,100)
-
 Y = np.random.uniform(0,c*weib(X,1,a),len(X))
 
 N = np.zeros(len(X))
