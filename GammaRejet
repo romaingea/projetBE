@@ -1,7 +1,6 @@
 def densite_Gamma(x,a):
     return 1/(math.gamma(a))*x**(a-1)*np.exp(-x)
-#
-#
+
 # paramètre de la loi
 a = 0.5
 
