@@ -1,0 +1,394 @@
+# -*- coding: utf-8 -*-
+"""
+Éditeur de Spyder
+
+Ceci est un script temporaire.
+"""
+import numpy as np
+import numpy.linalg as npl
+import matplotlib.pyplot as plt
+import numpy.random as npr
+import math
+
+import seaborn as sns               #SEABORN
+sns.set(color_codes=True)
+
+import scipy.stats
+
+def generateurCongruentielLineaire(a,c,m,X0,n):
+    Xn = np.zeros([n])
+    Un = np.zeros([n])
+    Xn[0]=X0
+    Un[0]=Xn[0]/m
+    
+    for k in range(1,n):
+        Xn[k]=(a*Xn[k-1]+c)%m
+        Un[k]=Xn[k]/m
+    return Un,Xn
+
+# Changer la taille via une variable => simplification des modifications #
+a= 4**10+1 #11
+c= 1 #1
+m= 2**31 #70
+X0=150 #100
+N=10000
+
+
+Un = generateurCongruentielLineaire(a,c,m,X0,N)[0]  # (11,1,70,1,100) #
+plt.figure(1)
+plt.hist(Un,normed=1,range=(0.0,1.0),label="proportion",color='r')
+plt.title("Densité de Un")
+plt.legend(loc="best")
+plt.show() 
+
+# Xn fonction du temps #
+temps=np.linspace(1,N+1,N)    
+Xn = generateurCongruentielLineaire(a,c,m,X0,N)[1]  # (11,1,70,1,100) #
+plt.figure(2)
+plt.plot(temps,Xn,label="Xn=f(temps)",color='g')
+plt.legend(loc="best")
+plt.show()
+## => période d'environ 30 pour paramètres (11,1,70,1,100) ????#
+
+# XnNext=f(Xn) #
+XnNext=Xn[1:]
+Xn=Xn[:-1]
+plt.figure(3)
+plt.scatter(Xn,XnNext,label="Xn+1=f(Xn)",color='c',marker='x')
+plt.legend(loc="best")
+plt.show()
+
+
+# U -> U([0,1]) #
+moyenne = 1/2 # (a+b)/2 #
+variance = 1/12 # (b-a)²/12 #
+
+def calculMoyVarEmpUnif(U): 
+    n=len(U)
+    moyEmp = np.zeros([n])
+    sommeMoyEmp = 0
+    varEmp = np.zeros([n])
+    sommeVarEmp = 0
+    
+    # autres cas (division par zéro OK)
+    for t in range(n):
+        sommeMoyEmp = sommeMoyEmp + U[t] 
+        moyEmp[t] = (1/(t+1))*sommeMoyEmp
+    
+    for k in range(n):
+        sommeVarEmp = sommeVarEmp + (U[k]-moyEmp[k])**2
+        varEmp[k] = (1/(k+1))*sommeVarEmp
+    return moyEmp,varEmp
+moyenneEmpirique,varianceEmpirique = calculMoyVarEmpUnif(Un)
+
+ecartMoyenne = np.zeros([len(Un)])
+ecartVariance = np.zeros([len(Un)])
+for i in range(len(Un)):
+    ecartMoyenne[i] = np.abs(moyenne - moyenneEmpirique[i])
+    ecartVariance[i] = np.abs(variance - varianceEmpirique[i])
+    
+plt.figure(4)
+plt.plot(temps,ecartMoyenne,label="Ecart moy/moyEmp",color='r')
+plt.plot(temps,ecartVariance,label="Ecart var/varEmp",color='y')
+plt.title("Ecarts moyenne/variance")
+plt.legend(loc="best")
+plt.show()
+
+# Calcul de la moyenneEmp et varEmp avec CongLinéaire ie en Utilisant la suite (Un)n générée par la CongLinéaire #
+def MoyVarEmpUnif(U): 
+    n=len(U)
+    sommeMoyEmp = 0
+    sommeVarEmp = 0
+    
+    for t in range(n):
+        sommeMoyEmp = sommeMoyEmp + U[t] 
+    moyEmp = (1/n)*sommeMoyEmp
+    
+    for k in range(n):
+        sommeVarEmp = sommeVarEmp + (U[k]-moyEmp)**2
+    varEmp = 1/n*sommeVarEmp
+    return moyEmp,varEmp
+moyenneEmpiriqueCong,varianceEmpiriqueCong = MoyVarEmpUnif(Un)
+
+print("moyenneEmpiriqueCong=",moyenneEmpiriqueCong)
+print("varianceEmpiriqueCong=",varianceEmpiriqueCong)
+print()
+
+# Calcul de la moyenneEmp et varEmp avec Python ie création d'une nouvelle suite (Vn)n #
+Vn=np.zeros([len(Un)])
+for k in range (len(Vn)):
+    Vn[k] = npr.random()
+    
+moyenneEmpiriquePy=Vn.mean()
+print("moyenneEmpiriquePy=",moyenneEmpiriquePy)
+varianceEmpiriquePy=Vn.var()
+print("varianceEmpiriquePy=",varianceEmpiriquePy)
+print()
+
+ecartMoyPytCong=np.abs(moyenneEmpiriquePy-moyenneEmpiriqueCong)
+ecartVarPytCong=np.abs(varianceEmpiriquePy-varianceEmpiriqueCong)
+print("ecartMoyPytCong=",ecartMoyPytCong)
+print("ecartVarPytCong=",ecartVarPytCong)
+
+
+"""
+question 4:
+On utilise le fait qu’une transformation affine d’une loi uniforme sur un intervalle est une loi
+uniforme sur l’image de l’intervalle. Ainsi il suffit de trouver a et b tel que l’image par x 7→ ax+b
+de [0, 1] soit I puis :
+U = rand(1);
+X = a + (b-a)U
+"""
+def UnifSurI(a,b):
+    UnSurI = a + (b-a)*Un
+    moyEmpSurI,varEmpSurI = MoyVarEmpUnif(UnSurI)
+    return UnSurI,moyEmpSurI,varEmpSurI
+    
+Uab,moy_ab,var_ab=UnifSurI(2,3)
+plt.figure(5)
+plt.hist(Uab,normed=1,label="proportion",color='r')
+plt.title("Densité de U[2;3]")
+plt.legend(loc="best")
+plt.show()
+print("ecart moy=",np.abs(2.5-moy_ab))
+print("ecart var=",np.abs((1/12)-var_ab))
+
+
+################################################# LOI DE CAUCHY #################################################
+def Cauchy(U):
+    return np.tan((U-0.5)*np.pi)
+
+# CauchyCong #
+CauchyCong=Cauchy(Un)
+
+# CauchyPython #
+CauchyPyt=Cauchy(Vn)
+
+plt.figure(6)
+plt.hist(CauchyCong,normed=1,bins = 100,range=(-11.0,11.0),label="CauchyCong",color='w',edgecolor='r',hatch = '*')
+plt.hist(CauchyPyt,normed=1,bins = 100, range=(-11.0,11.0),label="CauchyPython",color='w',edgecolor='y',hatch = '////')
+plt.xlabel('temps')
+plt.ylabel('densité')
+plt.title("Densités de CauchyCong et CauchyPython")
+plt.legend(loc="best")
+plt.show()
+
+
+################################################# LOI EXPONENTIELLE #################################################
+def Expo(U,A):
+    return -np.log((U)/A)  # ou -np.log((1-U)/A)
+
+# ExpoCong #
+ExpoCong=Expo(Un,0.5)
+
+# ExpoPython #
+ExpoPyt=Expo(Vn,0.5)
+
+plt.figure(6)
+#plt.hist(ExpoCong,normed=1, bins= 100,label="ExpCong",color='w',edgecolor='r',hatch = '*')
+#plt.hist(ExpoPyt,normed=1, bins= 100,label="ExpPython",color='w',edgecolor='c',hatch = '////')
+sns.distplot(ExpoCong,color='r')
+sns.distplot(ExpoPyt,color='b')
+plt.axis([0,5,0,0.7])
+plt.xlabel('temps')
+plt.ylabel('densité')
+plt.title("Densités de ExpoCong et ExpoPython")
+plt.legend(loc="best")
+plt.show()
+
+# Générer une loi discrete quelconque à l'aide d'une uniforme sur [0;1]
+def loiDiscrete(U,p):
+    s=np.zeros([len(p)+1])
+    Y=np.ones([len(U)])
+    
+    s[0]=0
+    for i in range (1,len(p)+1):
+        s[i] = np.sum(p[:i])
+    
+    for k in range (0,len(p)):
+        for j in range (0,len(U)):
+            if (s[k] <= U[j] <= s[k+1]):
+                Y[j]=k+1
+    return Y
+
+# Génération d'une Bernoulli B(p) #
+def Bernoulli(p):
+    Y_bernoulli = loiDiscrete (Vn,p)
+    
+    for i in range(len(Y_bernoulli)):
+        Y_bernoulli[i] -= 1
+        
+    return Y_bernoulli
+
+# Test de la génération d'une bernoulli B(0.25) #
+p_bernoulli=np.array([ [0.25], [0.75] ])
+Y_bernoulli = Bernoulli(p_bernoulli) 
+print ("Y_bernoulli=",Y_bernoulli)
+
+# Vérification des proportions #
+Somme_p1 = 0
+for i in range (len(Y_bernoulli)):
+    if (Y_bernoulli[i] == 0):
+        Somme_p1 += 1
+print("p1=",(Somme_p1/len(Y_bernoulli)))
+
+# Génération d'une Binomiale Bin(n,p) #
+def Binomiale(n,p):
+    Somme = 0
+    Y_bernoulli = Bernoulli(p)
+    for k in range(n):
+        Somme = Somme + Y_bernoulli[k]
+    return Somme
+
+Y_binomiale = Binomiale(10000,p_bernoulli)  # on prend le p de la bernoulli ie p=0.25
+print ("Y_binomiale=",Y_binomiale)
+
+# Loi normale
+def loi_normale(U1,U2):
+    n=len(U1)
+    X=np.zeros([n])
+    Y=np.zeros([n])
+    
+    for i in range(n): # 0 à n-1
+        X[i]=(-2*np.log(U1[i]))**(1/2)*np.cos(2*np.pi*U2[i])
+        Y[i]=(-2*np.log(U1[i]))**(1/2)*np.sin(2*np.pi*U2[i])
+    return X,Y
+
+X,Y=loi_normale(Un,Vn)  # U1=Ucong  U2=Upython
+
+plt.figure(7)
+x = np.linspace(-6, 6, 10000)
+#plt.hist(X,normed=1,UnifSurI(a,b):range=(-6,6),bins=100, label="Normale X",color='w',edgecolor='r',hatch = '*')
+#plt.hist(Y,normed=1,range=(-6,6),bins=100, label="Normale Y",color='w',edgecolor='c',hatch = '////')
+sns.distplot(X,color='b',label="loi normale (0,1) (Un congruentielle)")
+sns.distplot(Y,color='r',label="loi normale (0,1) (Vn python)")
+plt.plot(x,scipy.stats.norm.pdf(x,0,1),color='y',label="loi Normale Réelle (0,1)")
+plt.xlabel('temps')
+plt.ylabel('densité normale')
+plt.title("Densités des lois normales X et Y")
+plt.legend(loc="best")
+plt.show()
+
+
+# Loi de Weibull
+def loi_Weibull(L,k,U):
+    return L*np.power( (-np.log(1-U)) , (1/k) )
+
+# Variables nécessaires
+k = 2
+L = 0.5
+# WeibullCong 
+
+plt.scatter(X,Y)
+plt.show()
+WeibullCong=loi_Weibull(L,k,Un)
+
+# WeibullPyt #
+WeibullPyt=loi_Weibull(L,k,Vn)
+
+## WeibullRelle #
+def weib(x,n,a): # n=L  a=k
+    return (a / n) * (x / n)**(a - 1) * np.exp(-(x / n)**a)
+
+plt.figure(8)
+x = np.linspace(0, 2, 10000)
+#plt.hist(WeibullCong,normed=1,range=(0,6),bins=1000)
+#plt.hist(WeibullPyt,normed=1,range=(0,6),bins=1000)
+plt.plot(x, weib(x, L, k),color='y',label=r'$k=%.1f,\ \lambda=%.1f$' % (k, L))
+sns.distplot(WeibullCong,color='b',label=r'$k=%.1f,\ \lambda=%.1f$' % (k, L))
+sns.distplot(WeibullPyt,color='r',label=r'$k=%.1f,\ \lambda=%.1f$' % (k, L))
+plt.xlabel('temps')
+plt.ylabel('densité')
+plt.title("Densités de WeibullCong et WeibullPyt")
+plt.legend(loc="best")
+plt.show()    
+
+
+
+
+# question 26
+def pave(taille) :
+    #X = UnifSurI(-1,1)[0]
+    #Y = 2*np.random()-1
+    X = np.random.uniform(-1,1,taille)
+    Y = np.random.uniform(-1,1,taille)
+    return X,Y
+
+
+def cercle_26(taille) :
+
+    U = np.zeros(taille)
+    V = np.zeros(taille)
+    
+    
+    X,Y = pave(taille)
+    
+    for i in range(taille):
+    
+        if (np.sqrt(X[i]**2+Y[i]**2) < 1) :
+            U[i] = X[i]
+            V[i] = Y[i]
+    return U,V
+
+
+X,Y = pave(10000)
+Xcercle,Ycercle = cercle_26(10000)
+plt.scatter(X,Y,s=3)
+plt.scatter(Xcercle,Ycercle,s=3)
+
+
+plt.axis("equal")
+plt.show()
+
+
+###############################################################################
+
+
+
+## Simulation de la loi Gamma
+
+
+def densite_Gamma(x,a):
+    return 1/(math.gamma(a))*x**(a-1)*np.exp(-x)
+#
+#
+# paramètre de la loi
+a = 0.5
+
+# constante 
+c = 1/(a*math.gamma(a))*np.exp(a**(1/(1-a))*(1-a))
+
+
+U = np.random.uniform(0,1,100000)
+
+X = loi_Weibull(1,a,U)
+
+#A = np.linspace(0,20,100)
+
+Y = np.random.uniform(0,c*weib(X,1,a),len(X))
+
+N = np.zeros(len(X))
+
+indice = 0
+
+for i in range(len(X)): 
+    if (Y[i] > densite_Gamma(X[i],a)) :
+        i=+1
+    else:
+        N[i]=X[i]    
+    
+    
+
+sns.distplot(N,color='r')
+
+plt.xlim(0, 5)
+plt.ylim(0,2)
+plt.show()
+
+
+########################################
+
+
+
+
+
